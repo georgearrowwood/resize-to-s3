@@ -9,7 +9,7 @@ npm i resize-to-s3
 ### Use
 
 ```javascript
-var resizeToS3 = require('resize-to-s3');
+var ResizeToS3 = require('resize-to-s3');
 
 // AWS S3 config
 var conf = {
@@ -40,7 +40,7 @@ resizeToS3
   .then(function(res){ 
     console.log('image loaded!', res);
     // resize and send stream to s3
-    return imagesResizeS3.resize(destinations)
+    return resizeToS3.resize(destinations)
   })
   .then(function(res){ 
     console.log('Images resized and sent to S3!', res);
