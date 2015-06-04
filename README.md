@@ -1,4 +1,4 @@
-# Resize Image to varios sizes and save stream to Amazon AWS S3.
+# Resize Image to various sizes and save stream to Amazon AWS S3.
 
 ### Install with npm
 

@@ -1,10 +1,10 @@
 {
   "name": "resize-to-s3",
   "version": "0.1.0",
-  "description": "Resize Image to varios sizes and save stream to Amazon AWS S3",
+  "description": "Resize Image to various sizes and save stream to Amazon AWS S3",
   "main": "index.js",
   "scripts": {
-    "test": "echo "Error: no test specified" && exit 1"
+    "test": "echo 'Error: no test specified' && exit 1"
   },
   "repository": {
     "type": "git",
