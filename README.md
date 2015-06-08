@@ -23,11 +23,13 @@ var conf = {
 
 // set up resize destinations and file names
 var destinations = [{
+  name: 'small',
   width:200, 
   height: 200,
   key: 'images/small' // file extension will be added to it
 },
 {
+  name: 'bigger',
   width:400, 
   height: 400,
   key: 'images/bigger' // file extension will be added to it
