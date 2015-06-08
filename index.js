@@ -59,39 +59,58 @@ ImagesResizeS3.prototype.loadImage = function (imagePath) {
 }  
 
 
-ImagesResizeS3.prototype.resize = function(options) {
+ImagesResizeS3.prototype.resize = function(imageSizes) {
   var ready = Q.defer();
 
-  if (!options || !Array.isArray(options)) ready.reject('Wrong options format');
+  if (!imageSizes || !Array.isArray(imageSizes)) ready.reject('Wrong image sizes format, must be an array');
   if (this.format !== 'JPEG') this.gm.background('transparency');
 
-  async.eachSeries(options, function iterator(options, cb) {
-    this.resizeOne(options);
-    this.streamToS3(options, cb);
+  var keys = [];
+
+  async.eachSeries(imageSizes, function iterator(imageSize, cb) {
+    this.resizeOne(imageSize);
+    this.streamToS3(imageSize, function(err, key){
+      if (err) cb(err);
+      else {
+        imageSize.key = key;
+        keys.push(imageSize);
+        cb();
+      }  
+    });
   }.bind(this), function(err){
     if (err)
       ready.reject(err);
     else
-      ready.resolve(options);
+      ready.resolve(keys);
   });
   return ready.promise;
 }
 
 
-ImagesResizeS3.prototype.resizeOne = function(options) {
+ImagesResizeS3.prototype.resizeOne = function(imageSize) {
   this.gm
-    .resize(options.width, options.height, '>')
+    .resize(imageSize.width, imageSize.height, '>')
     .compose('Copy')
     .gravity('Center')
-    .extent(options.width, options.height)
+    .extent(imageSize.width, imageSize.height)
 }  
 
 
-ImagesResizeS3.prototype.streamToS3 = function(options, cb) {
+ImagesResizeS3.prototype.streamToS3 = function(imageSize, cb) {
+
+  var key = imageSize.key + '.' + this.format.toLowerCase();
+
   this.gm.stream(function (err, stdout, stderr) {
     this.s3
-      .upload({Body: stdout, Key: options.key + '.' + this.format.toLowerCase()})
-      .send(cb);
+      .upload({
+        Body: stdout, 
+        Key: key,
+        ACL: 'public-read'
+      })
+      .send(function(err, res){
+        if (err) cb(err);
+        else cb(null, key);
+      });
   }.bind(this));
 }
 
